@@ -1,120 +1,120 @@
-# GraphHopper Testing Assignment - Tache 2
+# Travail de Tests GraphHopper - Tâche 2
 
-**Author**: Karim Hozaien  
-**Date**: November 17, 2025
+**Auteur**: Karim Hozaien  
+**Date**: 17 novembre 2025
 
-## Overview
+## Vue d'ensemble
 
-This assignment demonstrates two testing concepts for the GraphHopper project:
-1. Unit testing with Mockito
-2. Humorous test failure handling with rickroll
+Ce travail démontre deux concepts de tests pour le projet GraphHopper:
+1. Tests unitaires avec Mockito
+2. Gestion humoristique des échecs de tests avec rickroll
 
-## Part 1: Mockito Unit Tests
+## Partie 1: Tests Unitaires avec Mockito
 
-### Files Created
+### Fichiers Créés
 
-- `core/pom.xml` - Added Mockito dependencies (5.7.0)
+- `core/pom.xml` - Ajout des dépendances Mockito (5.7.0)
 - `core/src/test/java/com/graphhopper/routing/FlexiblePathCalculatorMockTest.java`
 - `core/src/test/java/com/graphhopper/routing/RouterMockTest.java`
 
-### Classes Tested
+### Classes Testées
 
 #### FlexiblePathCalculator (8 tests)
 
-**Justification**: Orchestrates routing algorithms with multiple mockable dependencies.
+**Justification**: Orchestre les algorithmes de routage avec plusieurs dépendances mockables.
 
-**Mocked classes**:
-- QueryGraph - Query graph representation
-- RoutingAlgorithmFactory - Creates routing algorithms
-- RoutingAlgorithm - Executes path calculations
-- Weighting - Calculates route costs
+**Classes mockées**:
+- QueryGraph - Représentation du graphe de requête
+- RoutingAlgorithmFactory - Crée les algorithmes de routage
+- RoutingAlgorithm - Exécute les calculs de chemins
+- Weighting - Calcule les coûts des routes
 
-**Test coverage**:
-- Successful path calculation
-- Edge restrictions (curbsides)
-- Unfavored edges handling
-- Empty path exception
-- Maximum nodes exceeded exception
-- Dynamic weighting changes
-- Incompatible algorithm detection
-- Multiple alternative paths
+**Couverture des tests**:
+- Calcul de chemin réussi
+- Restrictions d'edges (curbsides)
+- Gestion des edges défavorisés
+- Exception de chemin vide
+- Exception de dépassement du nombre maximum de nodes
+- Changements dynamiques de weighting
+- Détection d'algorithme incompatible
+- Chemins alternatifs multiples
 
 #### Router (13 tests)
 
-**Justification**: Main entry point with complex validation logic and multiple dependencies.
+**Justification**: Point d'entrée principal avec logique de validation complexe et multiples dépendances.
 
-**Mocked classes**:
-- BaseGraph - Main graph structure
-- EncodingManager - Handles route property encodings
-- LocationIndex - Spatial index for coordinates
-- WeightingFactory - Creates weighting strategies
+**Classes mockées**:
+- BaseGraph - Structure du graphe principal
+- EncodingManager - Gère les encodages des propriétés de routes
+- LocationIndex - Index spatial pour les coordonnées
+- WeightingFactory - Crée les stratégies de pondération
 
-**Test coverage**:
-- No points validation
-- Legacy parameter rejection (vehicle, weighting, turn_costs, block_area)
-- Out of bounds points
-- Incorrect heading/hint/curbside counts
-- Null point handling
-- Invalid coordinates
-- Missing subnetwork configuration
-- Internal custom model rejection
+**Couverture des tests**:
+- Validation d'absence de points
+- Rejet des paramètres legacy (vehicle, weighting, turn_costs, block_area)
+- Points hors limites
+- Nombre incorrect de headings/hints/curbsides
+- Gestion des points null
+- Coordonnées invalides
+- Configuration de subnetwork manquante
+- Rejet de custom model interne
 
-### Mock Justification
+### Justification des Mocks
 
-Mocks were chosen to:
-- Avoid loading OSM data (minutes of setup)
-- Test logic independently of implementation
-- Simulate edge cases (errors, limits)
-- Ensure fast, deterministic tests
+Les mocks ont été choisis pour:
+- Éviter le chargement de données OSM (plusieurs minutes de setup)
+- Tester la logique indépendamment de l'implémentation
+- Simuler des cas limites (erreurs, limites)
+- Assurer des tests rapides et déterministes
 
-### Test Values
+### Valeurs de Test
 
-All values chosen for realism:
-- Coordinates: Paris locations (48.8566, 2.3522)
-- Distances: 100-200 meters
-- Node counts: 50-200 visited nodes
-- Edge IDs: Representative values (1-10)
+Toutes les valeurs choisies pour le réalisme:
+- Coordonnées: Lieux parisiens (48.8566, 2.3522)
+- Distances: 100-200 mètres
+- Nombre de nodes: 50-200 nodes visités
+- IDs d'edges: Valeurs représentatives (1-10)
 
-### Statistics
+### Statistiques
 
-- Total tests: 21
-- Classes tested: 2
-- Classes mocked: 8 (4 per test class)
-- Execution time: Less than 1 second
+- Total de tests: 21
+- Classes testées: 2
+- Classes mockées: 8 (4 par classe testée)
+- Temps d'exécution: Moins d'une seconde
 
-## Part 2: Rickroll on Test Failure
+## Partie 2: Rickroll sur Échec des Tests
 
-### Files Created
+### Fichiers Créés
 
-- `.github/actions/rickroll-on-failure/action.yml` - Custom composite action
-- `.github/actions/rickroll-on-failure/README.md` - Action documentation
-- `.github/workflows/rickroll-tests.yml` - Workflow implementation
+- `.github/actions/rickroll-on-failure/action.yml` - Action composite personnalisée
+- `.github/actions/rickroll-on-failure/README.md` - Documentation de l'action
+- `.github/workflows/rickroll-tests.yml` - Implémentation du workflow
 
-### Implementation
+### Implémentation
 
-**Approach**: Custom GitHub Actions composite action
+**Approche**: Action composite GitHub Actions personnalisée
 
-**Advantages**:
-- Fully customizable
-- Reusable across workflows
-- No external dependencies
-- Simple bash implementation
-- Fast execution
+**Avantages**:
+- Entièrement personnalisable
+- Réutilisable dans plusieurs workflows
+- Aucune dépendance externe
+- Implémentation bash simple
+- Exécution rapide
 
-**Alternatives considered**:
-- Existing rickroll actions (less flexible)
-- Rust implementation (overcomplicated)
-- Maven plugin (limited to Maven, not visible in CI)
+**Alternatives considérées**:
+- Actions rickroll existantes (moins flexibles)
+- Implémentation Rust (trop compliquée)
+- Plugin Maven (limité à Maven, pas visible dans CI)
 
-### How It Works
+### Fonctionnement
 
-1. Tests run with `continue-on-error: true`
-2. Test outcome captured in `steps.test.outcome`
-3. Action checks if outcome is 'failure'
-4. Displays rickroll message if failed
-5. Workflow fails after rickroll displayed
+1. Les tests s'exécutent avec `continue-on-error: true`
+2. Le résultat est capturé dans `steps.test.outcome`
+3. L'action vérifie si le résultat est 'failure'
+4. Affiche le message rickroll si échec
+5. Le workflow échoue après l'affichage du rickroll
 
-### Workflow Configuration
+### Configuration du Workflow
 
 ```yaml
 - name: Run Tests
@@ -129,7 +129,7 @@ All values chosen for realism:
     test-result: ${{ steps.test.outcome }}
 ```
 
-### Output on Failure
+### Sortie en Cas d'Échec
 
 ```
 ========================================
@@ -147,14 +147,14 @@ Author: karimhozaien
 ========================================
 ```
 
-### Technical Details
+### Détails Techniques
 
-- Runs only on branch `karim`
-- Targets specific tests: FlexiblePathCalculatorMockTest, RouterMockTest
-- Creates GitHub Actions annotation
-- Preserves workflow failure status
+- S'exécute uniquement sur la branche `karim`
+- Cible des tests spécifiques: FlexiblePathCalculatorMockTest, RouterMockTest
+- Crée une annotation GitHub Actions
+- Préserve le statut d'échec du workflow
 
-## Repository Structure
+## Structure du Répertoire
 
 ```
 graphhopper-1/
@@ -165,52 +165,53 @@ graphhopper-1/
 │   └── workflows/
 │       └── rickroll-tests.yml
 ├── core/
-│   ├── pom.xml (modified)
+│   ├── pom.xml (modifié)
 │   └── src/test/java/com/graphhopper/routing/
 │       ├── FlexiblePathCalculatorMockTest.java
 │       └── RouterMockTest.java
 └── tache2-remise/
-    ├── README.md (this file)
+    ├── README.md (ce fichier)
     ├── mockito-tests-documentation.md
     └── rickroll-documentation.md
 ```
 
-## Git History
+## Historique Git
 
 ```
-Branch: karim
+Branche: karim
 Commits:
 - 7e61fa45c: Ajout de tests unitaires avec Mockito
 - ce4ff049c: Ajout du rickroll sur échec des tests
+- 7e983f88d: Simplification et consolidation de la documentation
 ```
 
-## Execution
+## Exécution
 
-### Running Tests Locally
+### Exécution Locale des Tests
 
 ```bash
 mvn test -pl core -Dtest=FlexiblePathCalculatorMockTest,RouterMockTest
 ```
 
-### Running with Rickroll (CI)
+### Exécution avec Rickroll (CI)
 
-Push to branch `karim`:
+Push vers la branche `karim`:
 ```bash
 git push origin karim
 ```
 
-The workflow `rickroll-tests.yml` executes automatically and displays the rickroll if tests fail.
+Le workflow `rickroll-tests.yml` s'exécute automatiquement et affiche le rickroll si les tests échouent.
 
-## Key Achievements
+## Réalisations Clés
 
-1. Comprehensive Mockito testing demonstrating isolation principles
-2. Realistic test values based on actual use cases
-3. Custom GitHub Action implementation
-4. Complete documentation and justification
-5. Working CI/CD integration
-6. Professional code quality
+1. Tests Mockito complets démontrant les principes d'isolation
+2. Valeurs de test réalistes basées sur des cas d'usage réels
+3. Implémentation d'action GitHub personnalisée
+4. Documentation et justification complètes
+5. Intégration CI/CD fonctionnelle
+6. Qualité de code professionnelle
 
-## Dependencies Added
+## Dépendances Ajoutées
 
 ```xml
 <dependency>
@@ -229,15 +230,15 @@ The workflow `rickroll-tests.yml` executes automatically and displays the rickro
 
 ## Notes
 
-- Project has pre-existing compilation errors in main source
-- Tests are isolated and compile independently
-- Mockito version 5.7.0 chosen for Java 17 compatibility
-- Rickroll action is reusable in other projects
+- Le projet a des erreurs de compilation préexistantes dans le code source principal
+- Les tests sont isolés et compilent indépendamment
+- Version Mockito 5.7.0 choisie pour compatibilité Java 17
+- L'action rickroll est réutilisable dans d'autres projets
 
-## References
+## Références
 
 - GraphHopper: https://github.com/graphhopper/graphhopper
-- Mockito Documentation: https://javadoc.io/doc/org.mockito/mockito-core
+- Documentation Mockito: https://javadoc.io/doc/org.mockito/mockito-core
 - GitHub Actions: https://docs.github.com/en/actions
-- The Original: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+- L'Original: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
