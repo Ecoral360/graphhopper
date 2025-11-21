@@ -1,6 +1,6 @@
-# Travail de Tests GraphHopper - Tâche 2
+# Travail de Tests GraphHopper - Tâche 3
 
-**Auteur**: Karim Hozaien  
+**Auteur**: Karim Hozaien && Mathis Laroche
 **Date**: 17 novembre 2025
 
 ## Vue d'ensemble
@@ -242,3 +242,13 @@ Le workflow `rickroll-tests.yml` s'exécute automatiquement et affiche le rickro
 - GitHub Actions: https://docs.github.com/en/actions
 - L'Original: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
+
+
+## Partie 3: Changement du Workflow pour test de mutation
+
+### Fichiers Créés
+
+- `.github/workflow/test-mutation.yml` 
+
+### Notes:
+Voir le fichier "workflow-test-mutation.md"
