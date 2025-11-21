@@ -1,0 +1,69 @@
+name: Mutation Testing
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  mutation-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # 1. Run mutation tests for this branch
+      - name: Run Pitest
+        run: mvn -B -Pmutation-testing org.pitest:pitest-maven:mutationCoverage
+
+      - name: Extract mutation score
+        id: extract-score
+        run: |
+          SCORE=$(grep -oPm1 "(?<=<mutationScore>)[^<]+" target/pit-reports/*/mutations.xml | head -n 1)
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+      # 2. Compare with main's score (if available)
+      - name: Download previous mutation score
+        if: github.event_name == 'pull_request'
+        uses: actions/download-artifact@v4
+        with:
+          name: mutation-score
+          path: ./prev
+        continue-on-error: true
+
+      - name: Compare mutation score
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ -f "./prev/score.txt" ]; then
+            PREV=$(cat ./prev/score.txt)
+            CUR=${{ steps.extract-score.outputs.score }}
+
+            echo "Previous score: $PREV"
+            echo "Current score:  $CUR"
+
+            awk "BEGIN {exit !($CUR >= $PREV)}" || {
+              echo "ERROR: Mutation score decreased."
+              exit 1
+            }
+          else
+            echo "No previous score exists — skipping comparison."
+          fi
+
+      # 3. Update score for main branch
+      - name: Save mutation score as artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-score
+          path: score.txt
+        run: |
+          echo "${{ steps.extract-score.outputs.score }}" > score.txt
+
